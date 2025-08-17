@@ -15,7 +15,5 @@ if(_env.success === false) {
     throw new Error('Variables de ambiente inválidas');
 }
 
-console.log('JWT_SECRET:', _env.data.JWT_SECRET);
-
 export const env = _env.data;
 
