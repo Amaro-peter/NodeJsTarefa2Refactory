@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  nome        String
+  email       String    @unique
+  senha       String
+  foto        String?
+  posts       Post[]    @relation
+  comentarios Comment[] @relation
+  likes       Like[]    @relation
+
+  @@map("users")
+}
+
+model Post {
+  id          String    @id @default(uuid())
+  titulo      String
+  conteudo    String
+  created_at  DateTime  @default(now())
+  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    String
+  comentarios Comment[] @relation
+  likes       Like[]    @relation
+
+  @@map("posts")
+}
+
+model Comment {
+  id         String   @id @default(uuid())
+  conteudo   String
+  created_at DateTime @default(now())
+  author     User     @relation(fields: [authorId], references: [id], onDelete: NoAction)
+  authorId   String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: NoAction)
+  postId     String
+  likes      Like[]   @relation
+
+  @@map("comments")
+}
+
+model Like {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  author     User     @relation(fields: [authorId], references: [id], onDelete: NoAction)
+  authorId   String
+  post       Post?    @relation(fields: [postId], references: [id], onDelete: NoAction)
+  postId     String?
+  comment    Comment? @relation(fields: [commentId], references: [id], onDelete: NoAction)
+  commentId  String?
+
+  @@map("likes")
+}
