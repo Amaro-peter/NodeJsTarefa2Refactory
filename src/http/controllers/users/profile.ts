@@ -1,5 +1,5 @@
 import { PrismaUsersRepository } from "@/repositories/prisma/prisma-user-repository";
-import { GetUserCase } from "@/use-cases/get-user-use-case";
+import { GetUserCase } from "@/use-cases/user/get-user-use-case";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 

@@ -1,8 +1,8 @@
-import { ResourceNotFoundError } from "./errors/resource-not-found-error";
 import { compare, hash } from "bcryptjs";
-import { UserAlreadyExists } from "./errors/user-already-exists-error";
 import { UsersRepository, UserUpdateInput } from "@/repositories/users-repository";
 import { User } from "@/generated/prisma";
+import { ResourceNotFoundError } from "../errors/resource-not-found-error";
+import { UserAlreadyExists } from "../errors/user-already-exists-error";
 
 
 interface UpdateUserUseCaseRequest {
