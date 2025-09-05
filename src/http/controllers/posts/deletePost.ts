@@ -4,6 +4,7 @@ import { PrismaPostsRepository } from '@/repositories/prisma/prisma-posts-reposi
 import { DeletePostUseCase } from '@/use-cases/posts/delete-posts-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { InvalidCrendentialsError } from '@/use-cases/errors/invalid-credentials-error';
+import { makeDeletePostsUseCase } from '@/use-cases/factories/posts/make-delete-posts-use-case';
 
 export async function deletePost(request: FastifyRequest, reply: FastifyReply) {
   const deletePostParamsSchema = z.object({
@@ -13,8 +14,7 @@ export async function deletePost(request: FastifyRequest, reply: FastifyReply) {
   const { postId } = deletePostParamsSchema.parse(request.params);
 
   try {
-    const postsRepository = new PrismaPostsRepository();
-    const deletePostUseCase = new DeletePostUseCase(postsRepository);
+    const deletePostUseCase = makeDeletePostsUseCase();
 
     await deletePostUseCase.execute({
       postId,

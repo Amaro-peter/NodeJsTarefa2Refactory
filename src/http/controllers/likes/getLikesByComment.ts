@@ -1,8 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { PrismaLikesRepository } from '@/repositories/prisma/prisma-likes-repository';
-import { GetLikesByCommentUseCase } from '@/use-cases/likes/get-likes-by-comment-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { makeGetLikesByCommentUseCase } from '@/use-cases/factories/likes/make-get-likes-by-comment-use-case';
 
 export async function getLikesByComment(
   request: FastifyRequest,
@@ -15,10 +14,7 @@ export async function getLikesByComment(
   const { commentId } = getLikesByCommentParamsSchema.parse(request.params);
 
   try {
-    const likesRepository = new PrismaLikesRepository();
-    const getLikesByCommentUseCase = new GetLikesByCommentUseCase(
-      likesRepository
-    );
+    const getLikesByCommentUseCase = makeGetLikesByCommentUseCase();
 
     const { likes } = await getLikesByCommentUseCase.execute({ commentId });
 

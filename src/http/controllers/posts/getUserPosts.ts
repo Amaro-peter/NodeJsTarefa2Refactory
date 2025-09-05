@@ -1,9 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { PrismaPostsRepository } from '@/repositories/prisma/prisma-posts-repository';
-import { GetUserPostsUseCase } from '@/use-cases/posts/get-user-posts-use-case';
 import { PostsRetrievalError } from '@/use-cases/errors/post-retrieval-error';
-
+import { makeGetUserPostUseCase } from '@/use-cases/factories/posts/make-get-user-post-use-case';
 export async function getUserPosts(
   request: FastifyRequest,
   reply: FastifyReply
@@ -15,8 +13,7 @@ export async function getUserPosts(
   const { userId } = getUserPostsParamsSchema.parse(request.params);
 
   try {
-    const postsRepository = new PrismaPostsRepository();
-    const getUserPostsUseCase = new GetUserPostsUseCase(postsRepository);
+    const getUserPostsUseCase = makeGetUserPostUseCase();
 
     const { posts } = await getUserPostsUseCase.execute({ userId });
 

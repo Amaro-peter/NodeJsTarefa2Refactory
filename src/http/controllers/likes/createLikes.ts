@@ -1,8 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { PrismaLikesRepository } from '@/repositories/prisma/prisma-likes-repository';
-import { CreateLikeUseCase } from '@/use-cases/likes/create-like-use-case';
 import { CreateLikeError } from '@/use-cases/errors/create-like-error';
+import { makeCreateLikeUseCase } from '@/use-cases/factories/likes/make-create-like-use-case';
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createLikeBodySchema = z.object({
@@ -13,8 +12,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
   const { postId, commentId } = createLikeBodySchema.parse(request.body);
 
   try {
-    const likesRepository = new PrismaLikesRepository();
-    const createLikeUseCase = new CreateLikeUseCase(likesRepository);
+    const createLikeUseCase = makeCreateLikeUseCase();
 
     await createLikeUseCase.execute({
       ...(postId !== undefined && { postId }),

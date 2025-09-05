@@ -4,6 +4,7 @@ import { PrismaCommentsRepository } from '@/repositories/prisma/prisma-comments-
 import { UpdateCommentUseCase } from '@/use-cases/comments/update-comment-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { InvalidCrendentialsError } from '@/use-cases/errors/invalid-credentials-error';
+import { makeUpdateCommentUseCase } from '@/use-cases/factories/comments/make-update-comment-use-case';
 
 export async function update(request: FastifyRequest, reply: FastifyReply) {
   const updateCommentParamsSchema = z.object({
@@ -18,8 +19,7 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
   const { conteudo } = updateCommentBodySchema.parse(request.body);
 
   try {
-    const commentsRepository = new PrismaCommentsRepository();
-    const updateCommentUseCase = new UpdateCommentUseCase(commentsRepository);
+    const updateCommentUseCase = makeUpdateCommentUseCase();
 
     const data = { 
         ...(conteudo !== undefined && { conteudo: { set: conteudo } }),

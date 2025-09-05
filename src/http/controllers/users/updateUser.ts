@@ -1,6 +1,5 @@
-import { PrismaUsersRepository } from "@/repositories/prisma/prisma-user-repository";
 import { ResourceNotFoundError } from "@/use-cases/errors/resource-not-found-error";
-import { UpdateUserUserCase } from "@/use-cases/user/update-user-use-case";
+import { makeUpdateUserUseCase } from "@/use-cases/factories/user/make-update-user-use-case";
 import { FastifyReply } from "fastify";
 import { FastifyRequest } from "fastify";
 import z from "zod";
@@ -20,8 +19,8 @@ export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
     const userId = request.user.sub;
 
     try {
-        const prismaUsersRepository = new PrismaUsersRepository();
-        const updateUserUseCase = new UpdateUserUserCase(prismaUsersRepository);
+        const updateUserUseCase = makeUpdateUserUseCase();
+
         const user = await updateUserUseCase.execute({
             id: userId,
             data: Object.fromEntries(

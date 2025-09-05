@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PrismaCommentsRepository } from '@/repositories/prisma/prisma-comments-repository';
 import { GetCommentsByUserUseCase } from '@/use-cases/comments/get-comments-by-user-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { makeGetCommentsByUserUseCase } from '@/use-cases/factories/comments/make-get-comments-by-user-use-case';
 
 export async function getCommentsByUser(
   request: FastifyRequest,
@@ -15,10 +16,7 @@ export async function getCommentsByUser(
   const { userId } = getCommentsByUserParamsSchema.parse(request.params);
 
   try {
-    const commentsRepository = new PrismaCommentsRepository();
-    const getCommentsByUserUseCase = new GetCommentsByUserUseCase(
-      commentsRepository
-    );
+    const getCommentsByUserUseCase = makeGetCommentsByUserUseCase();
 
     const { comments } = await getCommentsByUserUseCase.execute({ userId });
 

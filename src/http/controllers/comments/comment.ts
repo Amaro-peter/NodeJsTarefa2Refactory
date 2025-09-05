@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PrismaCommentsRepository } from '@/repositories/prisma/prisma-comments-repository';
 import { CreateCommentUseCase } from '@/use-cases/comments/create-comment-use-case';
 import { CreateCommentError } from '@/use-cases/errors/create-comment-error';
+import { makeCreateCommentUseCase } from '@/use-cases/factories/comments/make-create-comment-use-case';
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createCommentBodySchema = z.object({
@@ -13,8 +14,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
   const { conteudo, postId } = createCommentBodySchema.parse(request.body);
 
   try {
-    const commentsRepository = new PrismaCommentsRepository();
-    const createCommentUseCase = new CreateCommentUseCase(commentsRepository);
+    const createCommentUseCase = makeCreateCommentUseCase();
 
     const comment = await createCommentUseCase.execute({
       conteudo,

@@ -2,14 +2,14 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { PrismaCommentsRepository } from '@/repositories/prisma/prisma-comments-repository';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { GetAllCommentsUseCase } from '@/use-cases/comments/get-all-comments-use-case';
+import { makeGetAllCommentsUseCase } from '@/use-cases/factories/comments/make-get-all-comments-use-case';
 
 export async function getAllComments(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
   try {
-    const commentsRepository = new PrismaCommentsRepository();
-    const getAllCommentsUseCase = new GetAllCommentsUseCase(commentsRepository);
+    const getAllCommentsUseCase = makeGetAllCommentsUseCase();
 
     const { comments } = await getAllCommentsUseCase.execute();
 

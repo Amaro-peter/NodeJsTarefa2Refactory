@@ -1,11 +1,9 @@
-import { PrismaUsersRepository } from "@/repositories/prisma/prisma-user-repository";
-import { GetUserCase } from "@/use-cases/user/get-user-use-case";
+import { makeUserUseCase } from "@/use-cases/factories/user/make-user-use-case";
 import { FastifyReply, FastifyRequest } from "fastify";
 
 
 export async function profile(request: FastifyRequest, reply: FastifyReply) {
-    const prismaUsersRepository = new PrismaUsersRepository();
-    const userUseCase = new GetUserCase(prismaUsersRepository);
+    const userUseCase = makeUserUseCase();
 
     const { user } = await userUseCase.execute({
         userId: request.user.sub

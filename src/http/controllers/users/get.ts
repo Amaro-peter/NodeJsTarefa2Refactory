@@ -1,6 +1,5 @@
-import { PrismaUsersRepository } from "@/repositories/prisma/prisma-user-repository";
 import { ResourceNotFoundError } from "@/use-cases/errors/resource-not-found-error";
-import { GetUserCase } from "@/use-cases/user/get-user-use-case";
+import { makeUserUseCase } from "@/use-cases/factories/user/make-user-use-case";
 import { FastifyReply, FastifyRequest } from "fastify";
 import z from "zod";
 
@@ -13,8 +12,8 @@ export async function get(request: FastifyRequest, reply: FastifyReply) {
     const { userId } = getParamsSchema.parse(request.params);
 
     try {
-        const prismaUsersRepository = new PrismaUsersRepository();
-        const userUseCase = new GetUserCase(prismaUsersRepository);
+        const userUseCase = makeUserUseCase();
+
         const user = await userUseCase.execute({
             userId
         });

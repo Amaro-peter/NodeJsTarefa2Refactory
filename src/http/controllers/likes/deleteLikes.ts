@@ -4,6 +4,7 @@ import { PrismaLikesRepository } from '@/repositories/prisma/prisma-likes-reposi
 import { DeleteLikeUseCase } from '@/use-cases/likes/delete-like-use-case';
 import { DeleteLikeError } from '@/use-cases/errors/delete-like-error';
 import { InvalidCrendentialsError } from '@/use-cases/errors/invalid-credentials-error';
+import { makeDeleteLikesUseCase } from '@/use-cases/factories/likes/make-delete-likes-use-case';
 
 export async function deleteLikes(request: FastifyRequest, reply: FastifyReply) {
   const deleteLikeParamsSchema = z.object({
@@ -13,8 +14,7 @@ export async function deleteLikes(request: FastifyRequest, reply: FastifyReply) 
   const { likeId } = deleteLikeParamsSchema.parse(request.params);
 
   try {
-    const likesRepository = new PrismaLikesRepository();
-    const deleteLikeUseCase = new DeleteLikeUseCase(likesRepository);
+    const deleteLikeUseCase = makeDeleteLikesUseCase();
 
     await deleteLikeUseCase.execute({
       likeId,

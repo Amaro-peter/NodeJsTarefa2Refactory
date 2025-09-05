@@ -1,8 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { z } from 'zod';
-import { PrismaPostsRepository } from '@/repositories/prisma/prisma-posts-repository';
-import { UpdatePostUseCase } from '@/use-cases/posts/update-post-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { makeUpdatePostUseCase } from '@/use-cases/factories/posts/make-update-post-use-case';
 
 export async function update(request: FastifyRequest, reply: FastifyReply) {
   const updatePostParamsSchema = z.object({
@@ -18,8 +17,7 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
   const { titulo, conteudo } = updatePostBodySchema.parse(request.body);
 
   try {
-    const postsRepository = new PrismaPostsRepository();
-    const updatePostUseCase = new UpdatePostUseCase(postsRepository);
+    const updatePostUseCase = makeUpdatePostUseCase();
 
     const data = {
       ...(titulo !== undefined && { titulo: { set: titulo } }),

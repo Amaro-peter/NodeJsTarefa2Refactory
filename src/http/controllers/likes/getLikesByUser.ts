@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { PrismaLikesRepository } from '@/repositories/prisma/prisma-likes-repository';
 import { GetLikesByUserUseCase } from '@/use-cases/likes/get-likes-by-user-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
+import { makeGetLikesByUserUseCase } from '@/use-cases/factories/likes/make-get-likes-by-user-use-case';
 
 export async function getLikesByUser(
   request: FastifyRequest,
@@ -15,8 +16,7 @@ export async function getLikesByUser(
   const { userId } = getLikesByUserParamsSchema.parse(request.params);
 
   try {
-    const likesRepository = new PrismaLikesRepository();
-    const getLikesByUserUseCase = new GetLikesByUserUseCase(likesRepository);
+    const getLikesByUserUseCase = makeGetLikesByUserUseCase();
 
     const { likes } = await getLikesByUserUseCase.execute({ userId });
 

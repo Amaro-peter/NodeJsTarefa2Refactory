@@ -4,6 +4,7 @@ import { PrismaCommentsRepository } from '@/repositories/prisma/prisma-comments-
 import { DeleteCommentUseCase } from '@/use-cases/comments/delete-comment-use-case';
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import { InvalidCrendentialsError } from '@/use-cases/errors/invalid-credentials-error';
+import { makeDeleteCommentUseCase } from '@/use-cases/factories/comments/make-delete-comment-use-case';
 
 export async function deleteComment(request: FastifyRequest, reply: FastifyReply) {
   const deleteCommentParamsSchema = z.object({
@@ -13,8 +14,7 @@ export async function deleteComment(request: FastifyRequest, reply: FastifyReply
   const { commentId } = deleteCommentParamsSchema.parse(request.params);
 
   try {
-    const commentsRepository = new PrismaCommentsRepository();
-    const deleteCommentUseCase = new DeleteCommentUseCase(commentsRepository);
+    const deleteCommentUseCase = makeDeleteCommentUseCase();
 
     await deleteCommentUseCase.execute({
       commentId,
