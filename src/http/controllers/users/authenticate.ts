@@ -1,50 +1,29 @@
-import { makeAuthenticationUseCase } from "@/use-cases/factories/user/make-authentication-use-case";
-import { FastifyReply, FastifyRequest } from "fastify";
-import z from "zod";
+import { UserPresenter } from '@/http/presenters/user-presenter'
+import { authenticateSchema } from '@/http/schemas/users/authenticate-schema'
+import { logger } from '@/lib/logger'
+import { InvalidCrendentialsError } from '@/use-cases/errors/invalid-credentials-error'
+import { makeAuthenticationUseCase } from '@/use-cases/factories/user/make-authentication-use-case'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 
-export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
-    const authenticateBodySchema = z.object({
-        email: z.string().email(),
-        senha: z.string().min(6)
-    });
 
-    const { email, senha } = authenticateBodySchema.parse(request.body);
+export async function authenticateUser(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { email, senha } = authenticateSchema.parse(request.body)
 
-    try {
+    const authenticateUserUseCase = makeAuthenticationUseCase()
 
-        const authenticateUseCase = makeAuthenticationUseCase();
+    const { user } = await authenticateUserUseCase.execute({ email, senha })
 
-        const user = await authenticateUseCase.execute({
-            email,
-            senha
-        });
+    logger.info('User authenticated successfully!')
 
-        const token = await reply.jwtSign(
-            { email: user.user.email }, // Inclua informações úteis no payload
-            {
-                sign: {
-                    sub: user.user.id, // Identificador único do usuário
-                },
-            }
-        );
+    const token = await reply.jwtSign({ sub: user.publicId, role: user.role }, { expiresIn: '1d' })
 
-        const refreshToken = await reply.jwtSign({}, {
-            sign: {
-                sub: user.user.id,
-                expiresIn: '7d',
-            }
-        });
-
-        return reply
-            .status(200)
-            .setCookie('refreshToken', refreshToken, {
-                path: '/',
-                secure: true,
-                sameSite: true,
-                httpOnly: true,
-            })
-            .send({ token });
-    } catch (err) {
-        return reply.status(401).send();
+    return reply.status(200).send({ token, user: UserPresenter.toHTTP(user) })
+  } catch (error) {
+    if (error instanceof InvalidCrendentialsError) {
+      return reply.status(400).send({ message: error })
     }
+
+    throw error
+  }
 }

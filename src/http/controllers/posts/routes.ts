@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { create } from './create';
-import { verifyJwt } from '@/http/middlewares/verify-jwt';
+import { verifyJwt } from '@/http/middlewares/verify-jwt.middleware';
 import { getAllPosts } from './getAllPosts';
 import { getUserPosts } from './getUserPosts';
 import { deletePost } from './deletePost';

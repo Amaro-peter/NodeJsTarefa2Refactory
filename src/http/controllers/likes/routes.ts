@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { verifyJwt } from '@/http/middlewares/verify-jwt';
+import { verifyJwt } from '@/http/middlewares/verify-jwt.middleware';
 import { create } from './createLikes';
 import { deleteLikes } from './deleteLikes';
 import { getLikeById } from './getLikeById';

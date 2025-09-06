@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { verifyJwt } from '@/http/middlewares/verify-jwt';
+import { verifyJwt } from '@/http/middlewares/verify-jwt.middleware';
 import { create } from './comment';
 import { getPostComments } from './getPostComments';
 import { deleteComment } from './deleteComment';

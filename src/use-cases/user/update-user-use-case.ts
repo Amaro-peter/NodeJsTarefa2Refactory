@@ -1,51 +1,58 @@
-import { compare, hash } from "bcryptjs";
-import { UsersRepository, UserUpdateInput } from "@/repositories/users-repository";
-import { User } from "@/generated/prisma";
-import { ResourceNotFoundError } from "../errors/resource-not-found-error";
-import { UserAlreadyExists } from "../errors/user-already-exists-error";
+import type { FastifyReply, FastifyRequest } from 'fastify'
+import { makeUpdateUserUseCase } from '../factories/user/make-update-user-use-case'
+import { updateSchema } from '@/http/schemas/users/update-schema'
+import { logger } from '@/lib/logger'
+import { UserPresenter } from '@/http/presenters/user-presenter'
+import { ResourceNotFoundError } from '../errors/resource-not-found-error'
+import { publicIdSchema } from '@/http/schemas/utils/public-id-schema'
 
+export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { name, email, password } = updateSchema.parse(request.body)
 
-interface UpdateUserUseCaseRequest {
-    id: string;
-    data: UserUpdateInput;
-}
+    const updateUserUseCase = makeUpdateUserUseCase()
 
-interface UpdateUserUseCaseResponse {
-    user: User | null;
-}
+    const { user } = await updateUserUseCase.execute({
+      publicId: request.user.sub,
+      name,
+      email,
+      password,
+    })
 
-export class UpdateUserUserCase {
-    constructor(private usersRepository: UsersRepository) {}
+    logger.info('User updated successfully!')
 
-    async execute({ id, data }: UpdateUserUseCaseRequest): Promise<UpdateUserUseCaseResponse> {
-        const user = await this.usersRepository.findById(id);
-
-        if(!user) {
-            throw new ResourceNotFoundError();
-        }
-
-        if(data.senha) {
-            const doesPasswordMatch = await compare(data.senha, user.senha);
-
-            if(!doesPasswordMatch) {
-                data.senha = await hash(data.senha, 8);
-            }
-        }
-
-        if(data.email) {
-            const userWithSameEmail = await this.usersRepository.findByEmail(data.email);
-
-            if(userWithSameEmail && userWithSameEmail.id !== user.id) {
-                throw new UserAlreadyExists();
-            }
-        }
-
-        const updatedUser = await this.usersRepository.update(id, data);
-
-        if(!updatedUser) {
-            throw new ResourceNotFoundError();
-        }
-
-        return { user: updatedUser };
+    return reply.status(200).send(UserPresenter.toHTTP(user))
+  } catch (error) {
+    if (error instanceof ResourceNotFoundError) {
+      return reply.status(404).send({ message: error.message })
     }
+
+    throw error
+  }
+}
+
+export async function updateUserByPublicId(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { name, email, password } = updateSchema.parse(request.body)
+    const { publicId } = publicIdSchema.parse(request.params)
+
+    const updateUserUseCase = makeUpdateUserUseCase()
+
+    const { user } = await updateUserUseCase.execute({
+      publicId,
+      name,
+      email,
+      password,
+    })
+
+    logger.info('User updated successfully!')
+
+    return reply.status(200).send(UserPresenter.toHTTP(user))
+  } catch (error) {
+    if (error instanceof ResourceNotFoundError) {
+      return reply.status(404).send({ message: error.message })
+    }
+
+    throw error
+  }
 }

@@ -1,45 +1,58 @@
-import { ResourceNotFoundError } from "@/use-cases/errors/resource-not-found-error";
-import { makeUpdateUserUseCase } from "@/use-cases/factories/user/make-update-user-use-case";
-import { FastifyReply } from "fastify";
-import { FastifyRequest } from "fastify";
-import z from "zod";
-
+import { UserPresenter } from '@/http/presenters/user-presenter'
+import { updateSchema } from '@/http/schemas/users/update-schema'
+import { publicIdSchema } from '@/http/schemas/utils/public-id-schema'
+import { logger } from '@/lib/logger'
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { makeUpdateUserUseCase } from '@/use-cases/factories/user/make-update-user-use-case'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 
 export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { name, email, password } = updateSchema.parse(request.body)
 
-    const updateUserBodySchema = z.object({
-        nome: z.string().optional(),
-        email: z.string().email().optional(),
-        senha: z.string().optional(),
-        foto: z.string().optional(),
-    });
+    const updateUserUseCase = makeUpdateUserUseCase()
 
-    const { nome, email, senha, foto } = updateUserBodySchema.parse(request.body);
+    const { user } = await updateUserUseCase.execute({
+      publicId: request.user.sub,
+      name,
+      email,
+      password,
+    })
 
-    const userId = request.user.sub;
+    logger.info('User updated successfully!')
 
-    try {
-        const updateUserUseCase = makeUpdateUserUseCase();
-
-        const user = await updateUserUseCase.execute({
-            id: userId,
-            data: Object.fromEntries(
-                Object.entries({
-                    nome: nome,
-                    email: email,
-                    senha: senha,
-                    foto: foto
-                }).filter(([_, value]) => value !== undefined)
-            )
-        });
-
-        return reply.status(200).send({ user });
-    } catch (err) {
-        if (err instanceof ResourceNotFoundError) {
-            return reply.status(404).send({
-                message: err.message,
-            });
-        }
-        throw err;
+    return reply.status(200).send(UserPresenter.toHTTP(user))
+  } catch (error) {
+    if (error instanceof ResourceNotFoundError) {
+      return reply.status(404).send({ message: error.message })
     }
+
+    throw error
+  }
+}
+
+export async function updateUserByPublicId(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { name, email, password } = updateSchema.parse(request.body)
+    const { publicId } = publicIdSchema.parse(request.params)
+
+    const updateUserUseCase = makeUpdateUserUseCase()
+
+    const { user } = await updateUserUseCase.execute({
+      publicId,
+      name,
+      email,
+      password,
+    })
+
+    logger.info('User updated successfully!')
+
+    return reply.status(200).send(UserPresenter.toHTTP(user))
+  } catch (error) {
+    if (error instanceof ResourceNotFoundError) {
+      return reply.status(404).send({ message: error.message })
+    }
+
+    throw error
+  }
 }

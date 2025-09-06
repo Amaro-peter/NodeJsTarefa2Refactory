@@ -1,34 +1,51 @@
-import { UserAlreadyExists } from "@/use-cases/errors/user-already-exists-error";
-import { makeRegisterUseCase } from "@/use-cases/factories/user/make-register-use-case";
-import { FastifyReply, FastifyRequest } from "fastify";
-import z from "zod";
+import { UserRole } from '@/generated/prisma/client'
+import { UserPresenter } from '@/http/presenters/user-presenter'
+import { registerSchema } from '@/http/schemas/users/register-schema'
+import { logger } from '@/lib/logger'
+import { UserAlreadyExists } from '@/use-cases/errors/user-already-exists-error'
+import { makeRegisterUseCase } from '@/use-cases/factories/user/make-register-use-case'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
-    const registerBodySchema = z.object({
-        nome: z.string(),
-        email: z.string().email(),
-        senha: z.string().min(6),
-        foto: z.string().optional(),
-    });
+  try {
+    const { name, email, cpf, password } = registerSchema.parse(request.body)
 
-    const { nome, email, senha, foto } = registerBodySchema.parse(request.body);
+    const registerUseCase = makeRegisterUseCase()
 
-    try {
-        
-        const registerUseCase = makeRegisterUseCase();
+    const { user } = await registerUseCase.execute({
+      name,
+      email,
+      cpf,
+      password,
+      role: UserRole.DEFAULT,
+    })
 
-        await registerUseCase.execute({
-            nome,
-            email,
-            senha,
-            foto,
-        });
-    } catch (err) {
-        if (err instanceof UserAlreadyExists) {
-            return reply.status(409).send({ message: err.message });
-        }
-        throw err;
+    logger.info({ userId: user.publicId }, 'Researcher registered successfully!')
+
+    reply.status(201).send({ user: UserPresenter.toHTTP(user) })
+  } catch (error) {
+    if (error instanceof UserAlreadyExists) {
+      return reply.status(409).send({ message: error.message })
     }
 
-    return reply.status(201).send({ message: "Usuário criado com sucesso" });
+    throw error
+  }
+}
+
+export async function registerAdmin(request: FastifyRequest, reply: FastifyReply) {
+  try {
+    const { name, email, cpf, username, password } = registerSchema.parse(request.body)
+
+    const registerUseCase = makeRegisterUseCase()
+
+    const { user } = await registerUseCase.execute({ name, email, cpf, password, role: UserRole.ADMIN })
+
+    return reply.status(201).send({ user: UserPresenter.toHTTP(user) })
+  } catch (error) {
+    if (error instanceof UserAlreadyExists) {
+      return reply.status(409).send({ message: error.message })
+    }
+
+    throw error
+  }
 }

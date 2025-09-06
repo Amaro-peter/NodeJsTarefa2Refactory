@@ -11,54 +11,104 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id          String    @id @default(uuid())
-  nome        String
-  email       String    @unique
-  senha       String
-  foto        String?
-  posts       Post[]    @relation
-  comentarios Comment[] @relation
-  likes       Like[]    @relation
+enum AuthenticationStatus {
+  SUCCESS
+  USER_NOT_EXISTS
+  INCORRECT_PASSWORD
+  RECOVER_PASSWORD
+  INVALID_TOKEN
+  BLOCKED
+}
 
+enum UserRole {
+  ADMIN
+  DEFAULT
+}
+
+model AuthenticationAudit {
+  id         String               @id @default(uuid(7))
+  ipAddress  String?              @map("ip_address")
+  remotePort String?              @map("remote_port")
+  userAgent  String?              @map("user_agent")
+  origin     String?
+  status     AuthenticationStatus
+  userId     Int?                 @map("user_id")
+  user       User?                @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId, createdAt], name: "idx_auth_audit_user_date")
+  @@map("authentication_audit")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  publicId     String    @unique @default(uuid()) @map("public_id")
+  name         String
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  photo        String?
+  cpf          String    @unique
+  posts        Post[]
+  comments     Comment[]
+  likes        Like[]
+
+  loginAttempts Int       @default(0) @map("login_attempts")
+  lastLogin     DateTime? @map("last_login")
+  role          UserRole  @default(DEFAULT)
+
+  token          String?   @unique
+  tokenExpiresAt DateTime? @map("token_expires_at")
+
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  passwordChangedAt DateTime? @map("password_changed_at")
+
+  authenticationAudits AuthenticationAudit[]
+
+  @@index([name], name: "idx_user_name")
+  @@index([token], name: "idx_user_token")
   @@map("users")
 }
 
 model Post {
-  id          String    @id @default(uuid())
-  titulo      String
-  conteudo    String
-  created_at  DateTime  @default(now())
-  author      User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  authorId    String
-  comentarios Comment[] @relation
-  likes       Like[]    @relation
+  id        Int       @id @default(autoincrement())
+  publicId  String    @unique @default(uuid()) @map("public_id")
+  title     String
+  content   String
+  createdAt DateTime  @default(now()) @map("created_at")
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId  Int       @map("author_id")
+  comments  Comment[]
+  likes     Like[]
 
   @@map("posts")
 }
 
 model Comment {
-  id         String   @id @default(uuid())
-  conteudo   String
-  created_at DateTime @default(now())
-  author     User     @relation(fields: [authorId], references: [id], onDelete: NoAction)
-  authorId   String
-  post       Post     @relation(fields: [postId], references: [id], onDelete: NoAction)
-  postId     String
-  likes      Like[]   @relation
+  id        Int      @id @default(autoincrement())
+  publicId  String   @unique @default(uuid()) @map("public_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  author    User     @relation(fields: [authorId], references: [id], onDelete: NoAction)
+  authorId  Int      @map("author_id")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: NoAction)
+  postId    Int      @map("post_id")
+  likes     Like[]
 
   @@map("comments")
 }
 
 model Like {
-  id         String   @id @default(uuid())
-  created_at DateTime @default(now())
-  author     User     @relation(fields: [authorId], references: [id], onDelete: NoAction)
-  authorId   String
-  post       Post?    @relation(fields: [postId], references: [id], onDelete: NoAction)
-  postId     String?
-  comment    Comment? @relation(fields: [commentId], references: [id], onDelete: NoAction)
-  commentId  String?
+  id        Int      @id @default(autoincrement())
+  publicId  String   @unique @default(uuid()) @map("public_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  author    User     @relation(fields: [authorId], references: [id], onDelete: NoAction)
+  authorId  Int      @map("author_id")
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: NoAction)
+  postId    Int?     @map("post_id")
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: NoAction)
+  commentId Int?     @map("comment_id")
 
   @@map("likes")
 }

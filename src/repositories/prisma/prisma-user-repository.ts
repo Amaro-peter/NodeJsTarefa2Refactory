@@ -12,7 +12,7 @@ export class PrismaUsersRepository implements UsersRepository {
     async update(id: string, data: UserUpdateInput) {
         const user = await prisma.user.update({
             where: {
-                id
+                id: Number(id)
             },
             data: data
         });
@@ -23,7 +23,7 @@ export class PrismaUsersRepository implements UsersRepository {
     async delete(id: string) {
         const existingUser = await prisma.user.findUnique({
             where: {
-                id
+                id: Number(id)
             }
         });
 
@@ -33,7 +33,7 @@ export class PrismaUsersRepository implements UsersRepository {
 
         const user = await prisma.user.delete({
             where: {
-                id
+                id: Number(id)
             }
         });
 
@@ -43,7 +43,7 @@ export class PrismaUsersRepository implements UsersRepository {
     async findById(userId: string) {
         const user = await prisma.user.findUnique({
             where: {
-                id: userId
+                id: Number(userId)
             }
         });
 
@@ -58,6 +58,12 @@ export class PrismaUsersRepository implements UsersRepository {
         });
 
         return user;
+    }
+
+    async findBy(where: Prisma.UserWhereUniqueInput) {
+        return await prisma.user.findUnique({
+        where,
+        })
     }
 
     async create(data: Prisma.UserCreateInput): Promise<User> {

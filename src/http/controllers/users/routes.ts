@@ -1,30 +1,34 @@
-import { FastifyInstance } from "fastify";
-import { register } from "./register";
-import { authenticate } from "./authenticate";
-import { get } from "./get";
-import { deleteUser } from "./deleteUser";
-import { updateUser } from "./updateUser";
-import { profile } from "./profile";
-import { verifyJwt } from "@/http/middlewares/verify-jwt";
-import { refresh } from "./refresh";
-import { getAllUsers } from "./getAllUsers";
+import { UserRole } from '@/generated/prisma/client'
+import { verifyJwt } from '@/http/middlewares/verify-jwt.middleware'
+import { verifyUserRole } from '@/http/middlewares/verify-user-role.middleware'
+import { FastifyInstance } from 'fastify'
+import { register, registerAdmin } from './register'
+import { authenticateUser } from './authenticate'
+import { forgotPassword } from './forgot-password'
+import { resetPassword } from './reset-password'
+import { updateUser, updateUserByPublicId } from './updateUser'
+import { deleteUser, deleteUserByPublicId } from './deleteUser'
+import { listUsers } from './getAllUsers'
+import { getUserProfile, getUserByPublicId } from './profile'
 
+export async function usersRoutes(app: FastifyInstance) {
+  // Register routes:
+  app.post('/register/admin', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, registerAdmin)
+  app.post('/register', register)
 
-export function userRoutes(app: FastifyInstance) {
-    app.post('/users', register);
+  // Authentication routes:
+  app.post('/sessions', authenticateUser)
+  app.post('/forgot-password', forgotPassword)
+  app.patch('/reset-password', resetPassword)
 
-    app.post('/authenticate', authenticate);
+  // User routes:
+  app.patch('/me', { onRequest: [verifyJwt] }, updateUser)
+  app.get('/me', { onRequest: [verifyJwt] }, getUserProfile)
+  app.delete('/me', { onRequest: [verifyJwt] }, deleteUser)
 
-    app.get('/users/:userId', get);
-
-    app.get('/users', getAllUsers)
-
-    app.patch('/token/refresh', refresh);
-
-    //Authenticated routes
-    app.get('/profile',  {onRequest: [verifyJwt]}, profile);
-    
-    app.delete("/users", {  onRequest: [verifyJwt] }, deleteUser);
-
-    app.patch('/users', { onRequest: [verifyJwt] }, updateUser);
+  // Users administration routes:
+  app.patch('/:publicId', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, updateUserByPublicId)
+  app.delete('/:publicId', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, deleteUserByPublicId)
+  app.get('/:publicId', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, getUserByPublicId)
+  app.get('/', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, listUsers)
 }

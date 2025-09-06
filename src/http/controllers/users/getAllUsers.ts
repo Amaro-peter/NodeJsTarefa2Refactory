@@ -1,25 +1,14 @@
-import { ResourceNotFoundError } from "@/use-cases/errors/resource-not-found-error";
-import { makeGetAllUsersUseCase } from "@/use-cases/factories/user/make-get-all-users-use-case";
-import { FastifyReply, FastifyRequest } from "fastify";
+import { UserPresenter } from '@/http/presenters/user-presenter'
+import { logger } from '@/lib/logger'
+import { makeGetAllUsersUseCase } from '@/use-cases/factories/user/make-get-all-users-use-case'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 
-export async function getAllUsers(request: FastifyRequest, reply: FastifyReply) {
-    try {
-        const getAllUsersUseCase = makeGetAllUsersUseCase();
+export async function listUsers(_request: FastifyRequest, reply: FastifyReply) {
+  const listUsers = makeGetAllUsersUseCase()
 
-        const { users } = await getAllUsersUseCase.execute();
+  const { users } = await listUsers.execute()
 
-        const usersWithoutPassword = users.map(user => {
-            const { senha, ...userWithoutPassword } = user;
-            return userWithoutPassword;
-        })
+  logger.info('Admins retrieved successfully!')
 
-        return reply.status(200).send(usersWithoutPassword);
-
-    } catch (err) {
-        if(err instanceof ResourceNotFoundError) {
-            return reply.status(404).send({ message: err.message ?? 'Recurso não encontrado.' });
-        }
-
-        throw err;
-    }
+  return reply.status(200).send({ admins: UserPresenter.toHTTP(users) })
 }

@@ -1,5 +1,7 @@
+import { messages } from "@/constants/messages";
+
 export class UserAlreadyExists extends Error {
     constructor() {
-        super('User already exists.');
+        super(messages.validation.userAlreadyExists);
     }
 }

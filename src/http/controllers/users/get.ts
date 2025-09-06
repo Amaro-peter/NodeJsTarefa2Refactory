@@ -6,16 +6,16 @@ import z from "zod";
 
 export async function get(request: FastifyRequest, reply: FastifyReply) {
     const getParamsSchema = z.object({
-        userId: z.string().uuid()
+        publicId: z.string().uuid()
     });
 
-    const { userId } = getParamsSchema.parse(request.params);
+    const { publicId } = getParamsSchema.parse(request.params);
 
     try {
         const userUseCase = makeUserUseCase();
 
         const user = await userUseCase.execute({
-            userId
+            publicId
         });
 
         return reply.status(200).send(user);
