@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  db:
+    image: bitnami/postgresql:latest
+    container_name: database_social_media_project
+    restart: always
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRESQL_USERNAME=${POSTGRES_USER}
+      - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRESQL_DATABASE=${POSTGRES_DB}
+    volumes:
+      - pgdata:/bitnami/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  app:
+    build: .
+    container_name: node_app
+    ports:
+      - '3333:3333'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["npm", "run", "dev"]
+
+volumes:
+  pgdata:

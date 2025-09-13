@@ -10,6 +10,7 @@ import { updateUser, updateUserByPublicId } from './updateUser'
 import { deleteUser, deleteUserByPublicId } from './deleteUser'
 import { listUsers } from './getAllUsers'
 import { getUserProfile, getUserByPublicId } from './profile'
+import { searchUsersController } from './searchUsersController'
 
 export async function usersRoutes(app: FastifyInstance) {
   // Register routes:
@@ -31,4 +32,5 @@ export async function usersRoutes(app: FastifyInstance) {
   app.delete('/:publicId', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, deleteUserByPublicId)
   app.get('/:publicId', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, getUserByPublicId)
   app.get('/', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, listUsers)
+  app.get('/search', { onRequest: [verifyJwt, verifyUserRole([UserRole.ADMIN])] }, searchUsersController);
 }

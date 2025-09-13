@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { UsersRepository, UserUpdateInput } from "../users-repository";
 
 export class PrismaUsersRepository implements UsersRepository {
+    public items: User[] = [];
 
     async findAll() {
         const users = await prisma.user.findMany();
@@ -48,6 +49,11 @@ export class PrismaUsersRepository implements UsersRepository {
         });
 
         return user;
+    }
+
+    async searchMany(query: string, page: number) {
+        return this.items.filter((item) => item.name.includes(query))
+            .slice((page - 1) * 20, page * 20)
     }
 
     async findByEmail(email: string){

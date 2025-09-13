@@ -2,12 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -26,7 +26,7 @@ enum UserRole {
 }
 
 model AuthenticationAudit {
-  id         String               @id @default(uuid(7))
+  id         String               @id @default(uuid())
   ipAddress  String?              @map("ip_address")
   remotePort String?              @map("remote_port")
   userAgent  String?              @map("user_agent")
