@@ -4,8 +4,8 @@ import { PostCreationError } from '../errors/create-post-error';
 
 
 interface CreatePostUseCaseRequest {
-  titulo: string;
-  conteudo: string;
+  title: string;
+  content: string;
   authorId: string;
 }
 
@@ -17,13 +17,13 @@ export class CreatePostUseCase {
   constructor(private postsRepository: PostsRepository) {}
 
   async execute({
-    titulo,
-    conteudo,
+    title,
+    content,
     authorId,
   }: CreatePostUseCaseRequest): Promise<CreatePostUseCaseResponse> {
     const post = await this.postsRepository.create({
-      titulo,
-      conteudo,
+      title,
+      content,
       authorId,
     });
 

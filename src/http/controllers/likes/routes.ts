@@ -14,6 +14,6 @@ export async function likesRoutes(app: FastifyInstance) {
     app.get('/likes/comment/:commentId', getLikesByComment);
 
     //Authenticated routes
-    app.post('/likes', { onRequest: [verifyJwt] }, create);
+    app.post('/', { onRequest: [verifyJwt] }, create);
     app.delete('/likes/:likeId', { onRequest: [verifyJwt] }, deleteLikes);
 }

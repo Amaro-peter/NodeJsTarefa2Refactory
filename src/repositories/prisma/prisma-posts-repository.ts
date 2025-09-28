@@ -1,11 +1,17 @@
 import { prisma } from '@/lib/prisma';
-import { PostsRepository, PostUpdateInput } from '../posts-repository';
+import { CreatePostParams, PostsRepository, PostUpdateInput } from '../posts-repository';
 import { Prisma } from '@prisma/client'
 
 export class PrismaPostsRepository implements PostsRepository {
-  async create(data: Prisma.PostUncheckedCreateInput) {
+  async create({title, content, authorId}: CreatePostParams) {
     const post = await prisma.post.create({
-      data,
+      data: {
+        title,
+        content,
+        author: {
+          connect: { publicId: authorId },
+        }
+      }
     });
     return post;
   }

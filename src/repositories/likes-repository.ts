@@ -1,8 +1,14 @@
 import { Like, Post, Prisma } from '@prisma/client'
 
 
+export interface CreateLikeParams {
+  authorId: string;
+  postId?: string | null;
+  commentId?: string | null;
+}
+
 export interface LikesRepository {
-  create(data: Prisma.LikeUncheckedCreateInput): Promise<Like | null>;
+  create(data: CreateLikeParams): Promise<Like | null>;
   delete(id: string): Promise<void>;
   findById(likeId: string): Promise<Like | null>;
   findManyByPostId(postId: string): Promise<Like[] | null>;

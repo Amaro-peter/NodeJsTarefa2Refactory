@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
-import { LikesRepository } from '../likes-repository';
+import { CreateLikeParams, LikesRepository } from '../likes-repository';
 import { Like, Prisma } from '@prisma/client'
+import { connect } from 'node:http2';
 
 export class PrismaLikesRepository implements LikesRepository {
   findById(likeId: string): Promise<Like | null> {
@@ -11,9 +12,27 @@ export class PrismaLikesRepository implements LikesRepository {
     return like;
   }
 
-  async create(data: Prisma.LikeUncheckedCreateInput) {
+  async create(data: CreateLikeParams) {
     const like = await prisma.like.create({
-      data,
+      data: {
+        author: {
+          connect: { publicId: data.authorId },
+        },
+        ...(data.postId && {
+          post: {
+            connect: {
+              publicId: data.postId,
+            }
+          }
+        }),
+        ...(data.commentId && {
+          comment: {
+            connect: {
+              publicId: data.commentId,
+            }
+          }
+        })
+      }
     });
     return like;
   }
@@ -27,7 +46,9 @@ export class PrismaLikesRepository implements LikesRepository {
   async findManyByPostId(postId: string) {
     return await prisma.like.findMany({
       where: {
-        publicId: postId,
+        post: {
+          publicId: postId,
+        }
       },
     });
   }
@@ -35,7 +56,9 @@ export class PrismaLikesRepository implements LikesRepository {
   async findManyByUserId(userId: string): Promise<Like[]> {
     return await prisma.like.findMany({
       where: {
-        publicId: userId,
+        author: {
+          publicId: userId,
+        }
       },
     });
   }
@@ -43,7 +66,9 @@ export class PrismaLikesRepository implements LikesRepository {
   async findManyByCommentId(commentId: string): Promise<Like[]> {
     return await prisma.like.findMany({
       where: {
-        publicId: commentId,
+        comment: {
+          publicId: commentId,
+        }
       },
     });
   }

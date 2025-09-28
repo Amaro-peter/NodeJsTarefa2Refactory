@@ -7,18 +7,18 @@ import { makeCreatePostUseCase } from '@/use-cases/factories/posts/make-create-p
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createPostSchema = z.object({
-    titulo: z.string(),
-    conteudo: z.string(),
+    title: z.string(),
+    content: z.string(),
   });
 
-  const { titulo, conteudo } = createPostSchema.parse(request.body);
+  const { title, content } = createPostSchema.parse(request.body);
 
   try {
     const createPostUseCase = makeCreatePostUseCase();
 
     await createPostUseCase.execute({
-      titulo,
-      conteudo,
+      title,
+      content,
       authorId: request.user.sub,
     });
   } catch (err) {
