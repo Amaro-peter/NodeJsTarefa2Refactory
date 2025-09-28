@@ -25,7 +25,7 @@ export class ResetPasswordUseCase {
       throw new InvalidTokenError()
     }
 
-    const user = await this.usersRepository.update(String(userExists.id), {
+    const user = await this.usersRepository.update(userExists.publicId, {
       senha: passwordHash,
     })
 

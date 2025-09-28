@@ -1,58 +1,35 @@
-import type { FastifyReply, FastifyRequest } from 'fastify'
-import { makeUpdateUserUseCase } from '../factories/user/make-update-user-use-case'
-import { updateSchema } from '@/http/schemas/users/update-schema'
-import { logger } from '@/lib/logger'
-import { UserPresenter } from '@/http/presenters/user-presenter'
-import { ResourceNotFoundError } from '../errors/resource-not-found-error'
-import { publicIdSchema } from '@/http/schemas/utils/public-id-schema'
+import { UsersRepository, UserUpdateInput } from '@/repositories/users-repository';
+import { User } from '@prisma/client'
+import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 
-export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
-  try {
-    const { name, email, password } = updateSchema.parse(request.body)
-
-    const updateUserUseCase = makeUpdateUserUseCase()
-
-    const { user } = await updateUserUseCase.execute({
-      publicId: request.user.sub,
-      name,
-      email,
-      password,
-    })
-
-    logger.info('User updated successfully!')
-
-    return reply.status(200).send(UserPresenter.toHTTP(user))
-  } catch (error) {
-    if (error instanceof ResourceNotFoundError) {
-      return reply.status(404).send({ message: error.message })
-    }
-
-    throw error
-  }
+interface UpdateUserUseCaseRequest {
+  publicId: string;
+  name?: string;
+  email?: string;
 }
 
-export async function updateUserByPublicId(request: FastifyRequest, reply: FastifyReply) {
-  try {
-    const { name, email, password } = updateSchema.parse(request.body)
-    const { publicId } = publicIdSchema.parse(request.params)
+interface UpdateUserUseCaseResponse {
+  user: User;
+}
 
-    const updateUserUseCase = makeUpdateUserUseCase()
+export class UpdateUserUseCase {
+  constructor(private usersRepository: UsersRepository) {}
 
-    const { user } = await updateUserUseCase.execute({
-      publicId,
-      name,
-      email,
-      password,
-    })
+  async execute({publicId, name, email}: UpdateUserUseCaseRequest): Promise<UpdateUserUseCaseResponse> {
+    const data: UserUpdateInput = {};
+    if (name) data.name = name;
+    if (email) data.email = email;
 
-    logger.info('User updated successfully!')
+    const user = await this.usersRepository.update(publicId, data);
 
-    return reply.status(200).send(UserPresenter.toHTTP(user))
-  } catch (error) {
-    if (error instanceof ResourceNotFoundError) {
-      return reply.status(404).send({ message: error.message })
+    if (!user) {
+      throw new ResourceNotFoundError();
     }
 
-    throw error
+    return {
+      user,
+    };
+
+    
   }
 }

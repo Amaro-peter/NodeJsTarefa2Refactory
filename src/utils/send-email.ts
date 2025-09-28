@@ -4,6 +4,7 @@ import nodemailer, { SentMessageInfo } from 'nodemailer'
 import { Attachment } from 'nodemailer/lib/mailer'
 
 const transporter = nodemailer.createTransport({
+  service: 'gmail',
   host: env.SMTP_HOST,
   port: env.SMTP_PORT,
   secure: env.SMTP_SECURE,
@@ -18,7 +19,7 @@ interface SendEmailRequest {
   subject: string
   message: string
   html: string
-  attachments?: Attachment[]
+  attachments?: Attachment[] | undefined
 }
 
 export async function sendEmail({
@@ -38,11 +39,11 @@ export async function sendEmail({
       ...(attachments ? { attachments } : {}),
     })
 
-    logger.info({ sentTo: to, messageId: info.messageId }, 'Message sent!')
+    logger.info('Message sent!', [], { sentTo: to, messageId: info.messageId })
 
     return info
   } catch (error) {
-    logger.error({ error }, 'Erro ao enviar e-mail')
+    logger.error('Erro ao enviar e-mail', [], { error })
 
     throw error
   }

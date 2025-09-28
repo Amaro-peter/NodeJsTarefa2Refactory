@@ -12,20 +12,20 @@ export class PrismaCommentsRepository implements CommentsRepository {
 
   async findById(id: string) {
     const comment = await prisma.comment.findUnique({
-      where: { id },
+      where: { publicId: id },
     });
     return comment;
   }
 
   async delete(id: string) {
     await prisma.comment.delete({
-      where: { id },
+      where: { publicId: id },
     });
   }
 
   async update(id: string, data: UpdateCommentInput) {
     const comment = await prisma.comment.update({
-      where: { id },
+      where: { publicId: id },
       data,
     });
     return comment;
@@ -33,7 +33,7 @@ export class PrismaCommentsRepository implements CommentsRepository {
   async findManyByPostId(postId: string) {
     return await prisma.comment.findMany({
       where: {
-        postId,
+        publicId: postId,
       },
     });
   }
@@ -44,7 +44,7 @@ export class PrismaCommentsRepository implements CommentsRepository {
   async findManyByUserId(userId: string) {
     return await prisma.comment.findMany({
       where: {
-        authorId: userId,
+        publicId: userId,
       },
     });
   }

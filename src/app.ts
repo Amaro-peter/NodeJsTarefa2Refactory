@@ -10,6 +10,9 @@ import { messages } from './constants/messages'
 import { logger, runWithRequestId, runWithUserContext } from './lib/logger'
 import { logError } from './lib/logger/helper'
 import { appRoutes } from './http/routes'
+{/*import cron from 'node-cron'
+import { sendEmail } from './utils/send-email' 
+*/}
 
 z.config(z.locales.pt())
 
@@ -27,7 +30,7 @@ if (env.SENTRY_DSN) {
     profileLifecycle: 'trace',
   })
 
-  Sentry.setupFastifyErrorHandler(app)
+  Sentry.setupFastifyErrorHandler(app as any)
 }
 
 app.addHook('onRequest', (request, _reply, done) => {

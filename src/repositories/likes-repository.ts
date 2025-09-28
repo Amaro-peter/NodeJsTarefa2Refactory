@@ -1,4 +1,4 @@
-import { Like, Prisma } from '@prisma/client'
+import { Like, Post, Prisma } from '@prisma/client'
 
 
 export interface LikesRepository {
@@ -11,4 +11,5 @@ export interface LikesRepository {
   findManyByCommentId(commentId: string): Promise<Like[] | null>;
   findByAuthorAndPostId(authorId: string, postId: string): Promise<Like | null>
   findByAuthorAndCommentId(authorId: string, commentId: string): Promise<Like | null>;
+  findMostLikedPosts(): Promise<Post[] | null>;
 }

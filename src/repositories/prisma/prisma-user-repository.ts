@@ -10,10 +10,10 @@ export class PrismaUsersRepository implements UsersRepository {
         return users;
     }
 
-    async update(id: string, data: UserUpdateInput) {
+    async update(publicId: string, data: UserUpdateInput) {
         const user = await prisma.user.update({
             where: {
-                id: Number(id)
+                publicId
             },
             data: data
         });
@@ -21,10 +21,19 @@ export class PrismaUsersRepository implements UsersRepository {
         return user;
     }
 
-    async delete(id: string) {
+    async updateCredentials(id: string, data: Prisma.UserUpdateInput) {
+        return await prisma.user.update({
+            where: {
+                publicId: id,
+            },
+            data,
+        });
+    }
+
+    async delete(publicId: string) {
         const existingUser = await prisma.user.findUnique({
             where: {
-                id: Number(id)
+                publicId
             }
         });
 
@@ -34,18 +43,16 @@ export class PrismaUsersRepository implements UsersRepository {
 
         const user = await prisma.user.delete({
             where: {
-                id: Number(id)
+                publicId
             }
         });
 
         return user;
     }
 
-    async findById(userId: string) {
+    async findById(where: Prisma.UserWhereUniqueInput) {
         const user = await prisma.user.findUnique({
-            where: {
-                id: Number(userId)
-            }
+            where,
         });
 
         return user;

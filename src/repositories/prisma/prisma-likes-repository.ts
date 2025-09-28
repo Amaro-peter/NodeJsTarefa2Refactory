@@ -5,7 +5,7 @@ import { Like, Prisma } from '@prisma/client'
 export class PrismaLikesRepository implements LikesRepository {
   findById(likeId: string): Promise<Like | null> {
     const like = prisma.like.findUnique({
-        where: { id: likeId },
+        where: { publicId: likeId },
     });
 
     return like;
@@ -20,14 +20,14 @@ export class PrismaLikesRepository implements LikesRepository {
 
   async delete(id: string) {
     await prisma.like.delete({
-      where: { id },
+      where: { publicId: id },
     });
   }
 
   async findManyByPostId(postId: string) {
     return await prisma.like.findMany({
       where: {
-        postId,
+        publicId: postId,
       },
     });
   }
@@ -35,7 +35,7 @@ export class PrismaLikesRepository implements LikesRepository {
   async findManyByUserId(userId: string): Promise<Like[]> {
     return await prisma.like.findMany({
       where: {
-        authorId: userId,
+        publicId: userId,
       },
     });
   }
@@ -43,7 +43,7 @@ export class PrismaLikesRepository implements LikesRepository {
   async findManyByCommentId(commentId: string): Promise<Like[]> {
     return await prisma.like.findMany({
       where: {
-        commentId,
+        publicId: commentId,
       },
     });
   }
@@ -51,8 +51,12 @@ export class PrismaLikesRepository implements LikesRepository {
   async findByAuthorAndPostId(authorId: string, postId: string) {
     return await prisma.like.findFirst({
         where: {
-        authorId,
-        postId,
+          author: {
+            publicId: authorId,
+          },
+          post: {
+            publicId: postId,
+          },
         },
     });
   }
@@ -60,10 +64,28 @@ export class PrismaLikesRepository implements LikesRepository {
   async findByAuthorAndCommentId(authorId: string, commentId: string) {
     return await prisma.like.findFirst({
         where: {
-        authorId,
-        commentId,
-        },
+          author: {
+            publicId: authorId,
+          },
+          comment: {
+            publicId: commentId,
+          },
+        }
     });
+  }
+
+  async findMostLikedPosts() {
+      const topPosts = await prisma.post.findMany({
+        take: 5,
+        orderBy: {
+          likes: {_count: "desc"},
+        },
+        include: {
+          _count: { select: { likes: true } },
+        },
+      })
+
+      return topPosts;
   }
 
 }

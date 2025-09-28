@@ -11,10 +11,11 @@ services:
       - POSTGRESQL_USERNAME=${POSTGRES_USER}
       - POSTGRESQL_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRESQL_DATABASE=${POSTGRES_DB}
+      - POSTGRESQL_CREATE_DATABASE=${POSTGRES_DB}  # Garante criação do banco
     volumes:
       - pgdata:/bitnami/postgresql
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]  # Verifica o banco específico
       interval: 10s
       timeout: 5s
       retries: 5
