@@ -1,5 +1,5 @@
 import { messages } from '@/constants/messages'
-import { UserRole } from '@/generated/prisma/client'
+import { UserRole } from '@prisma/client'
 import { type FastifyReply, type FastifyRequest } from 'fastify'
 
 declare module '@fastify/jwt' {

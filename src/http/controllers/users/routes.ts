@@ -1,4 +1,4 @@
-import { UserRole } from '@/generated/prisma/client'
+import { UserRole } from '@prisma/client'
 import { verifyJwt } from '@/http/middlewares/verify-jwt.middleware'
 import { verifyUserRole } from '@/http/middlewares/verify-user-role.middleware'
 import { FastifyInstance } from 'fastify'

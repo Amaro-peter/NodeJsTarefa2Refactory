@@ -1,4 +1,4 @@
-import { Post } from '@/generated/prisma';
+import { Post } from '@prisma/client'
 import { PostsRepository, PostUpdateInput } from '@/repositories/posts-repository';
 import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 import { InvalidCrendentialsError } from '../errors/invalid-credentials-error';

@@ -1,4 +1,4 @@
-import { Comment } from '@/generated/prisma';
+import { Comment } from '@prisma/client'
 import { CommentsRepository } from '@/repositories/comments-repository';
 import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 

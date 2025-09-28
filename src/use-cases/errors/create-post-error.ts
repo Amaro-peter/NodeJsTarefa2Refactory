@@ -1,6 +1,7 @@
+import { messages } from "@/constants/messages";
+
 export class PostCreationError extends Error {
-  constructor() {
-    super('Failed to create the post.');
-    this.name = 'PostCreationError';
+  constructor(message: string = messages.errors.createPostError) {
+    super(message);
   }
 }

@@ -1,6 +1,7 @@
+import { messages } from "@/constants/messages";
+
 export class CreateLikeError extends Error {
-  constructor(message: string = 'Erro ao criar o like.') {
+  constructor(message: string = messages.errors.createLikeError) {
     super(message);
-    this.name = 'CreateLikeError';
   }
 }

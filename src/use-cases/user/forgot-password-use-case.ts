@@ -1,4 +1,4 @@
-import { User } from '@/generated/prisma/client'
+import { User } from '@prisma/client'
 import { emailSchema } from '@/http/schemas/utils/email'
 import { UsersRepository } from '@/repositories/users-repository'
 import { randomBytes } from 'crypto'

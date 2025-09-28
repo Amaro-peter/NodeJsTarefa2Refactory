@@ -1,5 +1,5 @@
 import { env } from '@/env'
-import { User } from '@/generated/prisma/client'
+import { User } from '@prisma/client'
 import { UsersRepository } from '@/repositories/users-repository'
 import { hash } from 'bcryptjs'
 import { InvalidTokenError } from '../errors/invalid-token-error'

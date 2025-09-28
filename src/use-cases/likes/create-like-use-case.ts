@@ -1,4 +1,4 @@
-import { Like } from "@/generated/prisma";
+import { Like } from '@prisma/client'
 import { LikesRepository } from "@/repositories/likes-repository";
 import { CreateLikeError } from "../errors/create-like-error";
 

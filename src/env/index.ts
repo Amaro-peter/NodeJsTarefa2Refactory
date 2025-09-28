@@ -11,7 +11,7 @@ const envSchema = z.object({
 
     // App
     APP_NAME: z.string().default('Projeto Base'),
-    APP_PORT: z.coerce.number().default(3000),
+    APP_PORT: z.coerce.number().default(3333),
     JWT_SECRET: z.string().min(60, 'The JWT_SECRET must be at least 60 characters long'),
     FRONTEND_URL: z.url().default('http://localhost:5173'),
     HASH_SALT_ROUNDS: z.coerce.number().default(12),

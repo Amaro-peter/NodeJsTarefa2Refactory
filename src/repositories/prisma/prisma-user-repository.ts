@@ -1,4 +1,4 @@
-import { Prisma, User } from "@/generated/prisma";
+import { Prisma, User } from '@prisma/client'
 import { prisma } from "@/lib/prisma";
 import { UsersRepository, UserUpdateInput } from "../users-repository";
 
@@ -52,8 +52,19 @@ export class PrismaUsersRepository implements UsersRepository {
     }
 
     async searchMany(query: string, page: number) {
-        return this.items.filter((item) => item.name.includes(query))
-            .slice((page - 1) * 20, page * 20)
+        const users = await prisma.user.findMany({
+            where: {
+                name: {
+                    contains: query,
+                    mode: 'insensitive',
+
+                },
+            },
+            skip: (page - 1) * 20,
+            take: 20,
+        });
+
+        return users;
     }
 
     async findByEmail(email: string){

@@ -1,6 +1,6 @@
 import { LikesRepository } from '@/repositories/likes-repository';
 import { ResourceNotFoundError } from '../errors/resource-not-found-error';
-import { Like } from '@/generated/prisma';
+import { Like } from '@prisma/client'
 
 interface GetLikesByPostUseCaseRequest {
   postId: string;

@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { LikesRepository } from '../likes-repository';
-import { Like, Prisma } from '@/generated/prisma';
+import { Like, Prisma } from '@prisma/client'
 
 export class PrismaLikesRepository implements LikesRepository {
   findById(likeId: string): Promise<Like | null> {

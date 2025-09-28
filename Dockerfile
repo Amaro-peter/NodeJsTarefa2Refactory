@@ -12,7 +12,10 @@ RUN npm install
 # Copia o restante do seu projeto
 COPY . .
 
-# Gera o cliente do Prisma
+# Remove qualquer cliente Prisma gerado localmente
+RUN rm -rf src/generated
+
+# Gera o cliente do Prisma no ambiente Linux
 RUN npx prisma generate
 
 # Expõe a porta da sua API

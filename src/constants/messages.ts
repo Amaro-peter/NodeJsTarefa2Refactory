@@ -20,6 +20,12 @@ export const messages = {
     unauthorized: 'Não autorizado!',
     invalidToken: 'Token inválido ou expirado!',
     passwordChangeRequired: 'É necessário alterar a senha antes de acessar o sistema!',
+    createCommentError: 'Erro ao criar o comentário.',
+    createLikeError: 'Erro ao criar o like.',
+    deleteLikeError: 'Erro ao deletar o like.',
+    userNotFound: 'Usuário não encontrado.',
+    postRetrievalError: 'Erro ao recuperar os posts.',
+    createPostError: 'Erro ao criar o post.',
   },
   info: {
     passwordResetGeneric: 'Se o usuário existir, você receberá um e-mail com instruções para redefinir a senha.',

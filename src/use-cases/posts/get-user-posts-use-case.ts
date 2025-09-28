@@ -1,4 +1,4 @@
-import { Post } from '@/generated/prisma';
+import { Post } from '@prisma/client'
 import { PostsRepository } from '@/repositories/posts-repository';
 import { PostsRetrievalError } from '../errors/post-retrieval-error';
 

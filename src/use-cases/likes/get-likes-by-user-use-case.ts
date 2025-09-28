@@ -1,4 +1,4 @@
-import { Like } from '@/generated/prisma';
+import { Like } from '@prisma/client'
 import { LikesRepository } from '@/repositories/likes-repository';
 import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 

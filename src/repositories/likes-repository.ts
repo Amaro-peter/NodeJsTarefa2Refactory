@@ -1,4 +1,4 @@
-import { Like, Prisma } from "@/generated/prisma";
+import { Like, Prisma } from '@prisma/client'
 
 
 export interface LikesRepository {

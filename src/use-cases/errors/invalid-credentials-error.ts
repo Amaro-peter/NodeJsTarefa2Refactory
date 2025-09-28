@@ -1,7 +1,7 @@
 import { messages } from "@/constants/messages";
 
 export class InvalidCrendentialsError extends Error {
-    constructor(arg = messages.errors.invalidCredentials) {
-        super(arg);
+    constructor(message: string = messages.errors.invalidCredentials) {
+        super(message);
     }
 }

@@ -1,4 +1,4 @@
-import { UserRole } from '@/generated/prisma/client'
+import { UserRole } from '@prisma/client'
 import { UserPresenter } from '@/http/presenters/user-presenter'
 import { registerSchema } from '@/http/schemas/users/register-schema'
 import { logger } from '@/lib/logger'
@@ -8,7 +8,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { name, email, cpf, password } = registerSchema.parse(request.body)
+    const { name, username, email, cpf, password } = registerSchema.parse(request.body)
 
     const registerUseCase = makeRegisterUseCase()
 
@@ -34,7 +34,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
 
 export async function registerAdmin(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { name, email, cpf, username, password } = registerSchema.parse(request.body)
+    const { name, username, email, cpf, password } = registerSchema.parse(request.body)
 
     const registerUseCase = makeRegisterUseCase()
 

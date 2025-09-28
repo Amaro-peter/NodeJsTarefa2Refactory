@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { PostsRepository, PostUpdateInput } from '../posts-repository';
-import { Prisma } from '@/generated/prisma';
+import { Prisma } from '@prisma/client'
 
 export class PrismaPostsRepository implements PostsRepository {
   async create(data: Prisma.PostUncheckedCreateInput) {
@@ -10,29 +10,29 @@ export class PrismaPostsRepository implements PostsRepository {
     return post;
   }
 
-  async findById(id: string) {
+  async findById(publicId: string) {
     const post = await prisma.post.findUnique({
-      where: { id },
+      where: { publicId },
     });
     return post;
   }
 
   async findManyByUserId(userId: string) {
     const posts = await prisma.post.findMany({
-      where: { authorId: userId },
+      where: { publicId: userId },
     });
     return posts;
   }
 
-  async delete(id: string) {
+  async delete(publicId: string) {
     await prisma.post.delete({
-      where: { id },
+      where: { publicId },
     });
   }
 
-  async update(id: string, data: PostUpdateInput) {
+  async update(publicId: string, data: PostUpdateInput) {
     const post = await prisma.post.update({
-      where: { id },
+      where: { publicId },
       data: data,
     });
     return post;

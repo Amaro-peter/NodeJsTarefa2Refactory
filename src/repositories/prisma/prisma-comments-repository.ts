@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { CommentsRepository, UpdateCommentInput } from '../comments-repository';
-import { Prisma } from '@/generated/prisma';
+import { Prisma } from '@prisma/client'
 
 export class PrismaCommentsRepository implements CommentsRepository {
   async create(data: Prisma.CommentUncheckedCreateInput) {

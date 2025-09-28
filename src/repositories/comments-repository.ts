@@ -1,4 +1,4 @@
-import { Comment, Prisma } from "@/generated/prisma";
+import { Comment, Prisma } from '@prisma/client'
 
 export interface UpdateCommentInput extends Prisma.CommentUpdateInput {}
 
