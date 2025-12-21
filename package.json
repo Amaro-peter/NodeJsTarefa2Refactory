@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "start": "node build/server.js",
-    "build": "tsup src --out-dir build"
+    "build": "tsup src --out-dir build",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -37,6 +39,8 @@
   },
   "devDependencies": {
     "@types/node-cron": "3.0.11",
-    "prisma": "6.15.0"
+    "prisma": "6.15.0",
+    "vite-tsconfig-paths": "5.1.4",
+    "vitest": "4.0.15"
   }
 }
