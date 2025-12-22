@@ -19,14 +19,18 @@ export class ResetPasswordUseCase {
   async execute({ token, password }: ResetPasswordUseCaseCaseRequest): Promise<ResetPasswordUseCaseCaseResponse> {
     const passwordHash = await hash(password, env.HASH_SALT_ROUNDS)
 
-    const userExists = await this.usersRepository.findBy({ token })
+    const userExists = await this.usersRepository.findBy({ token: token })
 
     if (!userExists || !userExists.tokenExpiresAt || userExists.tokenExpiresAt < new Date()) {
       throw new InvalidTokenError()
     }
 
     const user = await this.usersRepository.update(userExists.publicId, {
-      senha: passwordHash,
+      passwordHash: passwordHash,
+      passwordChangedAt: new Date(),
+      token: null,
+      tokenExpiresAt: null,
+      updatedAt: new Date(),
     })
 
     if (!user) {

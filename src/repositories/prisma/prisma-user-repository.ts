@@ -1,6 +1,6 @@
 import { Prisma, User } from '@prisma/client'
 import { prisma } from "@/lib/prisma";
-import { UsersRepository, UserUpdateInput } from "../users-repository";
+import {FindByToken, UsersRepository, UserUpdateInput } from "../users-repository";
 
 export class PrismaUsersRepository implements UsersRepository {
     public items: User[] = [];
@@ -11,11 +11,27 @@ export class PrismaUsersRepository implements UsersRepository {
     }
 
     async update(publicId: string, data: UserUpdateInput) {
+        const existingUser = await prisma.user.findUnique({
+            where: { publicId }
+        });
+
+        if(!existingUser) {
+            return null;
+        }
+
+        const updateData: Prisma.UserUpdateInput = {};
+        if (data.name !== undefined) updateData.name = data.name;
+        if (data.email !== undefined) updateData.email = data.email;
+        if (data.passwordHash !== undefined) updateData.passwordHash = data.passwordHash;
+        if (data.token !== undefined) updateData.token = data.token;
+        if (data.tokenExpiresAt !== undefined) updateData.tokenExpiresAt = data.tokenExpiresAt;
+        if (data.passwordChangedAt !== undefined) updateData.passwordChangedAt = data.passwordChangedAt;
+        if ((data as any).photo !== undefined) updateData.photo = (data as any).photo;
+        if ((data as any).senha !== undefined) updateData.passwordHash = (data as any).senha;
+
         const user = await prisma.user.update({
-            where: {
-                publicId
-            },
-            data: data
+            where: { publicId },
+            data: updateData,
         });
 
         return user;
@@ -84,9 +100,11 @@ export class PrismaUsersRepository implements UsersRepository {
         return user;
     }
 
-    async findBy(where: Prisma.UserWhereUniqueInput) {
-        return await prisma.user.findUnique({
-        where,
+    async findBy(findByToken: FindByToken): Promise<User | null> {
+        return await prisma.user.findFirst({
+            where: {
+                token: findByToken.token,
+            }
         })
     }
 

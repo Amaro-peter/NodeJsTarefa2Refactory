@@ -34,8 +34,8 @@ export class ForgotPasswordUseCase {
 
     const tokenData = {
       token: passwordToken,
-      resetExpiresAt: tokenExpiresAt,
-    };
+      tokenExpiresAt: tokenExpiresAt,
+    }
 
     if (!userExists) throw new UserNotFoundForPasswordResetError();
 

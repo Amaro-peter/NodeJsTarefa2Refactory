@@ -1,14 +1,14 @@
 import { UserRole } from '@prisma/client'
-import { UserPresenter } from '@/http/presenters/user-presenter'
 import { registerSchema } from '@/http/schemas/users/register-schema'
 import { logger } from '@/lib/logger'
 import { UserAlreadyExists } from '@/use-cases/errors/user-already-exists-error'
 import { makeRegisterUseCase } from '@/use-cases/factories/user/make-register-use-case'
 import type { FastifyReply, FastifyRequest } from 'fastify'
+import { UserPresenter } from '@/http/presenters/user-presenter'
 
 export async function register(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { name, username, email, cpf, password } = registerSchema.parse(request.body)
+    const { name, email, cpf, password } = registerSchema.parse(request.body)
 
     const registerUseCase = makeRegisterUseCase()
 
@@ -34,7 +34,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
 
 export async function registerAdmin(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { name, username, email, cpf, password } = registerSchema.parse(request.body)
+    const { name, email, cpf, password } = registerSchema.parse(request.body)
 
     const registerUseCase = makeRegisterUseCase()
 
