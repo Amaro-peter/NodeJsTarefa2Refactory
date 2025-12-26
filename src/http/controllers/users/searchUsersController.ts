@@ -29,6 +29,7 @@ export async function searchUsersController(request: FastifyRequest, reply: Fast
             return reply.status(404).send({ message: error.message });
         }
         logger.error("Error searching users");
-        return reply.status(500).send({ message: "Internal server error." });
+        
+        throw error
     }
 }

@@ -4,6 +4,8 @@ export interface UserUpdateInput {
     name?: string;
     email?: string;
     senha?: string;
+    cpf?: string;
+    username?: string;
     photo?: string;
     passwordHash?: string;
     token?: string | null;
@@ -19,7 +21,7 @@ export interface FindByToken {
 export interface UsersRepository {
     create(data: Prisma.UserCreateInput): Promise<User>;
     findByEmail(email: string): Promise<User | null>;
-    findById(where: Prisma.UserWhereUniqueInput): Promise<User | null>;
+    findById(where: Prisma.UserWhereUniqueInput | string): Promise<User | null>;
     searchMany(query: string, page: number): Promise<User[]>;
     findBy(findByToken: FindByToken): Promise<User | null>
     delete(id: string): Promise<User | null>;

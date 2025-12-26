@@ -9,7 +9,7 @@ export const updateSchema = z.object({
   email: emailSchema.optional(),
   cpf: cpfSchema.optional(),
   username: usernameSchema.optional(),
-  password: passwordSchema.optional(),
+  photo: z.string().optional(),
 })
 
 export type updateSchemaType = z.infer<typeof updateSchema>

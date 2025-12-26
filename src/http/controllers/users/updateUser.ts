@@ -8,15 +8,22 @@ import type { FastifyReply, FastifyRequest } from 'fastify'
 
 export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
   try {
-    const { name = '', email = '' } = updateSchema.parse(request.body)
+    
+    const body = typeof request.body === 'string' ? JSON.parse(request.body) : request.body
+    
+    const { name, email, cpf, username, photo } = updateSchema.parse(body)
+    
     const { publicId } = publicIdSchema.parse(request.params)
 
     const updateUserUseCase = makeUpdateUserUseCase()
 
     const { user } = await updateUserUseCase.execute({
-      publicId,
-      name,
-      email,
+      publicId: publicId || '',
+      ...(typeof name === 'string' ? { name } : {}),
+      ...(typeof email === 'string' ? { email } : {}),
+      ...(typeof cpf === 'string' ? { cpf } : {}),
+      ...(typeof username === 'string' ? { username } : {}),
+      ...(typeof photo === 'string' ? { photo } : {}),
     })
 
     logger.info('User updated successfully!')

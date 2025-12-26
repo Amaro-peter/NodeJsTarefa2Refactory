@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import {FindByToken, UsersRepository, UserUpdateInput } from "../users-repository";
 
 export class PrismaUsersRepository implements UsersRepository {
-    public items: User[] = [];
 
     async findAll() {
         const users = await prisma.user.findMany();
@@ -66,12 +65,14 @@ export class PrismaUsersRepository implements UsersRepository {
         return user;
     }
 
-    async findById(where: Prisma.UserWhereUniqueInput) {
-        const user = await prisma.user.findUnique({
-            where,
-        });
+    async findById(where: Prisma.UserWhereUniqueInput | string): Promise<User | null> {
+        const prismaWhere = typeof where === 'string' ? { publicId: where } : where
 
-        return user;
+        const user = await prisma.user.findUnique({
+            where: prismaWhere
+        })
+
+        return user
     }
 
     async searchMany(query: string, page: number) {
