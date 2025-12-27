@@ -6,8 +6,6 @@ interface UpdateUserUseCaseRequest {
   publicId: string;
   name?: string;
   email?: string;
-  cpf?: string;
-  username?: string;
   photo?: string;
 }
 
@@ -18,12 +16,10 @@ interface UpdateUserUseCaseResponse {
 export class UpdateUserUseCase {
   constructor(private usersRepository: UsersRepository) {}
 
-  async execute({publicId, name, email, cpf, username, photo}: UpdateUserUseCaseRequest): Promise<UpdateUserUseCaseResponse> {
+  async execute({publicId, name, email, photo}: UpdateUserUseCaseRequest): Promise<UpdateUserUseCaseResponse> {
     const data: UserUpdateInput = {};
     if (name) data.name = name;
     if (email) data.email = email;
-    if (cpf) data.cpf = cpf;
-    if (username) data.username = username;
     if (photo) data.photo = photo;
     data.updatedAt = new Date()
 

@@ -11,7 +11,7 @@ export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
     
     const body = typeof request.body === 'string' ? JSON.parse(request.body) : request.body
     
-    const { name, email, cpf, username, photo } = updateSchema.parse(body)
+    const { name, email, photo } = updateSchema.parse(body)
     
     const { publicId } = publicIdSchema.parse(request.params)
 
@@ -21,8 +21,6 @@ export async function updateUser(request: FastifyRequest, reply: FastifyReply) {
       publicId: publicId || '',
       ...(typeof name === 'string' ? { name } : {}),
       ...(typeof email === 'string' ? { email } : {}),
-      ...(typeof cpf === 'string' ? { cpf } : {}),
-      ...(typeof username === 'string' ? { username } : {}),
       ...(typeof photo === 'string' ? { photo } : {}),
     })
 

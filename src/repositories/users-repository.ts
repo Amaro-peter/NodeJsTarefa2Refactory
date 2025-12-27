@@ -4,8 +4,6 @@ export interface UserUpdateInput {
     name?: string;
     email?: string;
     senha?: string;
-    cpf?: string;
-    username?: string;
     photo?: string;
     passwordHash?: string;
     token?: string | null;
