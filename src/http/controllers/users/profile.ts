@@ -10,7 +10,11 @@ export async function getUserProfile(request: FastifyRequest, reply: FastifyRepl
   try {
     const getUserProfileUseCase = makeUserUseCase()
 
-    const { user } = await getUserProfileUseCase.execute({ publicId: request.user.sub })
+    const data = { publicId: String((request.user as any)?.sub) }
+
+    const { publicId } = publicIdSchema.parse(data)
+
+    const { user } = await getUserProfileUseCase.execute({ publicId })
 
     if (!user) {
       return reply.status(404).send({ message: 'User not found' })
@@ -18,7 +22,7 @@ export async function getUserProfile(request: FastifyRequest, reply: FastifyRepl
 
     logger.info('User profile retrieved successfully!')
 
-    return reply.status(200).send(UserPresenter.toHTTP(user))
+    return reply.status(200).send({ user: UserPresenter.toHTTP(user) })
   } catch (error) {
     if (error instanceof ResourceNotFoundError) {
       return reply.status(404).send({ message: error.message })
@@ -41,7 +45,7 @@ export async function getUserByPublicId(request: FastifyRequest, reply: FastifyR
 
     logger.info('User retrieved successfully!')
 
-    return reply.status(200).send(UserPresenter.toHTTP(user))
+    return reply.status(200).send({ user: UserPresenter.toHTTP(user) })
   } catch (error) {
     if (error instanceof ResourceNotFoundError) {
       return reply.status(404).send({ message: error.message })

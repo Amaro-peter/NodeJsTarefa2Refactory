@@ -4,12 +4,12 @@ import { ResourceNotFoundError } from "../errors/resource-not-found-error";
 
 
 interface GetUserUseCaseRequest {
-    publicId: string;
+    publicId: string
 
 }
 
 interface GetUserUseCaseResponse {
-    user: User | null;
+    user: User | null
 }
 
 export class GetUserCase {

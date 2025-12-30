@@ -1,4 +1,3 @@
-import { UserRole } from '@prisma/client'
 import { verifyJwt } from '@/http/middlewares/verify-jwt.middleware'
 import { verifyUserRole } from '@/http/middlewares/verify-user-role.middleware'
 import { FastifyInstance } from 'fastify'
@@ -13,7 +12,8 @@ import { listUsers } from './getAllUsers'
 import { getUserProfile, getUserByPublicId } from './profile'
 import { searchUsersController } from './searchUsersController'
 import { verifyUserOrAdmin } from '@/http/middlewares/verify-user-or-admin.middleware'
-import { config } from 'dotenv'
+import { UserRole } from '@prisma/client'
+
 
 export async function usersRoutes(app: FastifyInstance) {
 

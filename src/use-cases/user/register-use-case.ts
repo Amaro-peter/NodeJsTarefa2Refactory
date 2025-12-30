@@ -2,6 +2,7 @@ import { UsersRepository } from "@/repositories/users-repository";
 import { hash } from "bcryptjs";
 import { UserAlreadyExists } from "../errors/user-already-exists-error";
 import { User, UserRole } from '@prisma/client'
+import { env } from "@/env";
 
 interface RegisterUseCaseRequest {
     name: string;
@@ -32,7 +33,7 @@ export class RegisterUseCase {
             throw new UserAlreadyExists();
         }
 
-        const senhaHash = await hash(password, 8);
+        const senhaHash = await hash(password, env.HASH_SALT_ROUNDS);
 
         const user = await this.usersRepository.create({
             name,

@@ -27,10 +27,10 @@ export class InMemoryUsersRepository implements UsersRepository{
         const now = new Date();
         const user = {
             id: this.items.length + 1,
-            publicId: (data as any).publicId || "some-public-id",
+            publicId: (data as any).publicId || crypto.randomUUID(),
             name: (data as any).name,
             email: (data as any).email,
-            password_hash: (data as any).passwordHash,
+            passwordHash: (data as any).passwordHash,
             photo: (data as any).photo ?? null,
             cpf: (data as any).cpf,
             loginAttempts: (data as any).loginAttempts ?? 0,

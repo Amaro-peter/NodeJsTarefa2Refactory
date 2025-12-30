@@ -3,7 +3,6 @@ import { RegisterUseCase } from './register-use-case'
 import { compare } from 'bcryptjs'
 import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
 import { UserAlreadyExists } from '../errors/user-already-exists-error'
-import { uuidv4 } from 'zod'
 
 describe('Register Use Case', () => {
     it("should be able to register", async () => {
@@ -14,16 +13,20 @@ describe('Register Use Case', () => {
             const uniqueEmail = `johndoe${Date.now()}@gmail.com`
             const uniqueCpf = `${Math.floor(Math.random() * 100000000000)}`
 
+            const password = 'Teste123x!'
+
             const { user } = await registerUseCase.execute({
                 name: 'John Doe',
                 email: uniqueEmail,
-                password: 'pedroca1x!',
+                password,
                 cpf: uniqueCpf,
                 role: 'DEFAULT'
             })
 
             
-            expect(user.publicId).toEqual(expect.any(uuidv4))
+            expect(user.publicId).toMatch(
+                /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+            )
         } catch (error) {
             console.log('ERROR: ', error)
             throw error
@@ -38,17 +41,19 @@ describe('Register Use Case', () => {
             const uniqueEmail = `johndoe${Date.now()}@gmail.com`
             const uniqueCpf = `${Math.floor(Math.random() * 100000000000)}`
 
+            const password = 'Teste123x!'
+
             const { user } = await registerUseCase.execute({
                 name: 'John Doe',
                 email: uniqueEmail,
-                password: 'pedroca1x!',
+                password,
                 cpf: uniqueCpf,
                 role: 'DEFAULT'
             })
 
             const isPasswordCorrectlyHashed = await compare(
-                'pedroca1x!',
-                user.password_hash,
+                password,
+                user.passwordHash,
             )
 
             expect(isPasswordCorrectlyHashed).toBe(true)
@@ -66,10 +71,12 @@ describe('Register Use Case', () => {
             const uniqueEmail = `johndoe@gmail.com`
             const uniqueCpf = `${Math.floor(Math.random() * 100000000000)}`
 
+            const password = 'Teste123!!'
+
             await registerUseCase.execute({
                 name: 'John Doe',
                 email: uniqueEmail,
-                password: 'pedroca1x!',
+                password,
                 cpf: uniqueCpf,
                 role: 'DEFAULT'
             })
@@ -77,7 +84,7 @@ describe('Register Use Case', () => {
             await expect(() => registerUseCase.execute({
                 name: 'John Doe',
                 email: uniqueEmail,
-                password: 'pedroca1x!',
+                password,
                 cpf: uniqueCpf,
                 role: 'DEFAULT'
             })).rejects.toBeInstanceOf(UserAlreadyExists)

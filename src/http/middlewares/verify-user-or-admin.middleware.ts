@@ -14,11 +14,16 @@ export function verifyUserOrAdmin(paramName = 'publicId') {
             return
         }
 
-        const target = (request.params as any)?.[paramName]
-        const userIdCandidates = [authUser.sub, authUser.publicId].filter(Boolean)
+        if(authUser.role === UserRole.DEFAULT) {
+            const target = (request.params as any)?.[paramName]
+            const userIdCandidates = [authUser.sub, authUser.publicId].filter(Boolean)
+            if(userIdCandidates.includes(target)) {
+                return reply.status(403).send({ message: messages.errors.forbidden ?? 'Forbidden' })
+            }
 
-        if(!userIdCandidates.includes(target)) {
-            return reply.status(403).send({ message: messages.errors.forbidden ?? 'Forbidden' })
+            return
         }
+
+        return reply.status(403).send({ message: messages.errors.forbidden ?? 'Forbidden' })
     }
 }
